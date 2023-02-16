@@ -148,8 +148,13 @@ func (l *BatchSubmitter) Stop() {
 // 4. Load all new blocks into the local state.
 func (l *BatchSubmitter) loadBlocksIntoState(ctx context.Context) {
 	start, end, err := l.calculateL2BlockRangeToStore(ctx)
-	if err != nil {
-		l.log.Trace("was not able to calculate L2 block range", "err", err)
+	if errors.Is(err, ErrReorg) {
+		l.log.Warn("Found L2 reorg", "err", err)
+		l.state.Clear()
+		l.lastStoredBlock = eth.BlockID{}
+		return
+	} else if err != nil {
+		l.log.Info("was not able to calculate L2 block range", "err", err)
 		return
 	}
 
@@ -187,6 +192,7 @@ func (l *BatchSubmitter) loadBlockIntoState(ctx context.Context, blockNumber uin
 
 // calculateL2BlockRangeToStore determines the range (start,end] that should be loaded into the local state.
 // It also takes care of initializing some local state (i.e. will modify l.lastStoredBlock in certain conditions)
+// It will also indicate a reorg if it determines that the last stored block is no longer canonical.
 func (l *BatchSubmitter) calculateL2BlockRangeToStore(ctx context.Context) (eth.BlockID, eth.BlockID, error) {
 	childCtx, cancel := context.WithTimeout(ctx, networkTimeout)
 	defer cancel()
@@ -207,6 +213,17 @@ func (l *BatchSubmitter) calculateL2BlockRangeToStore(ctx context.Context) (eth.
 	} else if l.lastStoredBlock.Number < syncStatus.SafeL2.Number {
 		l.log.Warn("last submitted block lagged behind L2 safe head: batch submission will continue from the safe head now", "last", l.lastStoredBlock, "safe", syncStatus.SafeL2)
 		l.lastStoredBlock = syncStatus.SafeL2.ID()
+	}
+
+	// Ensure that the last stored block is still canonical. Not we need this check in addition to the internal check inside the batch
+	// queue because if there is a L2 reorg the L2 safe head on the sequence will be stuck until the batch submitter starts submitting again.
+	childCtx, cancel = context.WithTimeout(ctx, networkTimeout)
+	defer cancel()
+	if block, err := l.L2Client.BlockByNumber(childCtx, new(big.Int).SetUint64(l.lastStoredBlock.Number)); err != nil {
+		l.log.Info("Failed to check if the last stored block is canonical", "err", err)
+	} else if block.Hash() != l.lastStoredBlock.Hash {
+		l.log.Warn("Disccovered that the last stored block is no long canonical (L2 reorg occurred)", "number", block.NumberU64(), "last_hash", l.lastStoredBlock.Hash, "new_hash", block.Hash())
+		return eth.BlockID{}, eth.BlockID{}, fmt.Errorf("last stored block is not canonical: %w", ErrReorg)
 	}
 
 	// Check if we should even attempt to load any blocks. TODO: May not need this check
