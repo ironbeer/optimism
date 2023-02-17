@@ -414,7 +414,6 @@ func NewL2StorageConfig(config *DeployConfig, block *types.Block) (state.Storage
 	}
 	storage["L2CrossDomainMessenger"] = state.StorageValues{
 		"_initialized": 1,
-		"_owner":       config.ProxyAdminOwner,
 		// re-entrency lock
 		"_status":          1,
 		"_initializing":    false,
