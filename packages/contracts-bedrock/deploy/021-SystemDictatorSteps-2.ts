@@ -116,7 +116,7 @@ const deployFn: DeployFunction = async (hre) => {
       for (const dead of deads) {
         assert(
           (await AddressManager.getAddress(dead)) ===
-          ethers.constants.AddressZero
+            ethers.constants.AddressZero
         )
       }
     },
@@ -248,11 +248,6 @@ const deployFn: DeployFunction = async (hre) => {
       } catch (err) {
         // Expected.
       }
-      await assertContractVariable(
-        L1CrossDomainMessenger,
-        'owner',
-        SystemDictator.address
-      )
 
       // Check L1StandardBridge was initialized properly.
       await assertContractVariable(
@@ -284,8 +279,8 @@ const deployFn: DeployFunction = async (hre) => {
   if (await isStep(SystemDictator, 6)) {
     console.log(`
       You must now finalize the upgrade by calling finalize() on the SystemDictator. This will
-      transfer ownership of the ProxyAdmin and the L1CrossDomainMessenger to the final system owner
-      as specified in the deployment configuration.
+      transfer ownership of the ProxyAdmin to the final system owner as specified in the deployment
+      configuration.
     `)
 
     if (isLiveDeployer) {
@@ -307,11 +302,6 @@ const deployFn: DeployFunction = async (hre) => {
       1000
     )
 
-    await assertContractVariable(
-      L1CrossDomainMessenger,
-      'owner',
-      hre.deployConfig.finalSystemOwner
-    )
     await assertContractVariable(
       ProxyAdmin,
       'owner',
