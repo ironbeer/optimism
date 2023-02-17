@@ -418,7 +418,6 @@ func NewL2StorageConfig(config *DeployConfig, block *types.Block) (state.Storage
 		// re-entrency lock
 		"_status":          1,
 		"_initializing":    false,
-		"_paused":          false,
 		"xDomainMsgSender": "0x000000000000000000000000000000000000dEaD",
 		"msgNonce":         0,
 	}
