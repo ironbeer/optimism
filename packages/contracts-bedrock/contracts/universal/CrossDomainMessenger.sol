@@ -2,11 +2,9 @@
 pragma solidity 0.8.15;
 
 import {
-    OwnableUpgradeable
-} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {
     ReentrancyGuardUpgradeable
 } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { SafeCall } from "../libraries/SafeCall.sol";
 import { Hashing } from "../libraries/Hashing.sol";
 import { Encoding } from "../libraries/Encoding.sol";
@@ -32,10 +30,31 @@ contract CrossDomainMessengerLegacySpacer0 {
  * @custom:legacy
  * @title CrossDomainMessengerLegacySpacer1
  * @notice Contract only exists to add a spacer to the CrossDomainMessenger where the
- *         PausableUpgradable variables used to exist. Must be the third contract in the inheritance
- *         tree of the CrossDomainMessenger.
+ *         PausableUpgradable and OwnableUpgradeable variables used to exist. Must be
+ *         the third contract in the inheritance tree of the CrossDomainMessenger.
  */
 contract CrossDomainMessengerLegacySpacer1 {
+    /**
+     * @custom:legacy
+     * @custom:spacer __gap
+     * @notice Spacer for backwards compatibility.
+     */
+    uint256[50] private spacer_1_0_0;
+
+    /**
+     * @custom:legacy
+     * @custom:spacer _owner
+     * @notice Spacer for backwards compatibility.
+     */
+    address private spacer_51_0_20;
+
+    /**
+     * @custom:legacy
+     * @custom:spacer __gap
+     * @notice Spacer for backwards compatibility.
+     */
+    uint256[49] private spacer_52_0_32;
+
     /**
      * @custom:legacy
      * @custom:spacer _paused
@@ -48,7 +67,7 @@ contract CrossDomainMessengerLegacySpacer1 {
      * @custom:spacer __gap
      * @notice
      */
-    uint256[49] private spacer_102_0_0;
+    uint256[49] private spacer_102_0_32;
 }
 
 /**
@@ -64,7 +83,7 @@ contract CrossDomainMessengerLegacySpacer1 {
  */
 abstract contract CrossDomainMessenger is
     CrossDomainMessengerLegacySpacer0,
-    OwnableUpgradeable,
+    Initializable,
     CrossDomainMessengerLegacySpacer1,
     ReentrancyGuardUpgradeable
 {
@@ -406,8 +425,6 @@ abstract contract CrossDomainMessenger is
     // solhint-disable-next-line func-name-mixedcase
     function __CrossDomainMessenger_init() internal onlyInitializing {
         xDomainMsgSender = Constants.DEFAULT_L2_SENDER;
-        __Context_init_unchained();
-        __Ownable_init_unchained();
         __ReentrancyGuard_init_unchained();
     }
 
