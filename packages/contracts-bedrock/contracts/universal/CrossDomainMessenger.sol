@@ -39,7 +39,7 @@ contract CrossDomainMessengerLegacySpacer1 {
      * @custom:spacer __gap
      * @notice Spacer for backwards compatibility.
      */
-    uint256[50] private spacer_1_0_0;
+    uint256[50] private spacer_1_0_1600;
 
     /**
      * @custom:legacy
@@ -53,7 +53,7 @@ contract CrossDomainMessengerLegacySpacer1 {
      * @custom:spacer __gap
      * @notice Spacer for backwards compatibility.
      */
-    uint256[49] private spacer_52_0_32;
+    uint256[49] private spacer_52_0_1568;
 
     /**
      * @custom:legacy
@@ -67,7 +67,7 @@ contract CrossDomainMessengerLegacySpacer1 {
      * @custom:spacer __gap
      * @notice
      */
-    uint256[49] private spacer_102_0_32;
+    uint256[49] private spacer_102_0_1568;
 }
 
 /**
