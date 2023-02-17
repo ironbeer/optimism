@@ -5,9 +5,6 @@ import {
     OwnableUpgradeable
 } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {
-    PausableUpgradeable
-} from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import {
     ReentrancyGuardUpgradeable
 } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import { SafeCall } from "../libraries/SafeCall.sol";
@@ -17,18 +14,41 @@ import { Constants } from "../libraries/Constants.sol";
 
 /**
  * @custom:legacy
- * @title CrossDomainMessengerLegacySpacer
+ * @title CrossDomainMessengerLegacySpacer0
  * @notice Contract only exists to add a spacer to the CrossDomainMessenger where the
  *         libAddressManager variable used to exist. Must be the first contract in the inheritance
- *         tree of the CrossDomainMessenger
+ *         tree of the CrossDomainMessenger.
  */
-contract CrossDomainMessengerLegacySpacer {
+contract CrossDomainMessengerLegacySpacer0 {
     /**
      * @custom:legacy
      * @custom:spacer libAddressManager
      * @notice Spacer for backwards compatibility.
      */
     address private spacer_0_0_20;
+}
+
+/**
+ * @custom:legacy
+ * @title CrossDomainMessengerLegacySpacer1
+ * @notice Contract only exists to add a spacer to the CrossDomainMessenger where the
+ *         PausableUpgradable variables used to exist. Must be the third contract in the inheritance
+ *         tree of the CrossDomainMessenger.
+ */
+contract CrossDomainMessengerLegacySpacer1 {
+    /**
+     * @custom:legacy
+     * @custom:spacer _paused
+     * @notice Spacer for backwards compatibility.
+     */
+    bool private spacer_101_0_1;
+
+    /**
+     * @custom:legacy
+     * @custom:spacer __gap
+     * @notice
+     */
+    uint256[49] private spacer_102_0_0;
 }
 
 /**
@@ -39,11 +59,13 @@ contract CrossDomainMessengerLegacySpacer {
  *         needs to be extended slightly to provide low-level message passing functionality on each
  *         chain it's deployed on. Currently only designed for message passing between two paired
  *         chains and does not support one-to-many interactions.
+ *
+ *         Any changes to this contract MUST result in a semver bump for contracts that inherit it.
  */
 abstract contract CrossDomainMessenger is
-    CrossDomainMessengerLegacySpacer,
+    CrossDomainMessengerLegacySpacer0,
     OwnableUpgradeable,
-    PausableUpgradeable,
+    CrossDomainMessengerLegacySpacer1,
     ReentrancyGuardUpgradeable
 {
     /**
@@ -184,22 +206,6 @@ abstract contract CrossDomainMessenger is
     }
 
     /**
-     * @notice Allows the owner of this contract to temporarily pause message relaying. Backup
-     *         security mechanism just in case. Owner should be the same as the upgrade wallet to
-     *         maintain the security model of the system as a whole.
-     */
-    function pause() external onlyOwner {
-        _pause();
-    }
-
-    /**
-     * @notice Allows the owner of this contract to resume message relaying once paused.
-     */
-    function unpause() external onlyOwner {
-        _unpause();
-    }
-
-    /**
      * @notice Sends a message to some target address on the other chain. Note that if the call
      *         always reverts, then the message will be unrelayable, and any ETH sent will be
      *         permanently locked. The same will occur if the target on the other chain is
@@ -260,7 +266,7 @@ abstract contract CrossDomainMessenger is
         uint256 _value,
         uint256 _minGasLimit,
         bytes calldata _message
-    ) external payable nonReentrant whenNotPaused {
+    ) external payable nonReentrant {
         (, uint16 version) = Encoding.decodeVersionedNonce(_nonce);
         require(
             version < 2,
@@ -402,7 +408,6 @@ abstract contract CrossDomainMessenger is
         xDomainMsgSender = Constants.DEFAULT_L2_SENDER;
         __Context_init_unchained();
         __Ownable_init_unchained();
-        __Pausable_init_unchained();
         __ReentrancyGuard_init_unchained();
     }
 

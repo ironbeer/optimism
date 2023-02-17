@@ -359,17 +359,6 @@ contract SystemDictator is OwnableUpgradeable {
             payable(config.proxyAddressConfig.l1ERC721BridgeProxy),
             address(config.implementationAddressConfig.l1ERC721BridgeImpl)
         );
-
-        // Pause the L1CrossDomainMessenger, chance to check that everything is OK.
-        L1CrossDomainMessenger(config.proxyAddressConfig.l1CrossDomainMessengerProxy).pause();
-    }
-
-    /**
-     * @notice Unpauses the system at which point the system should be fully operational.
-     */
-    function step6() external onlyOwner step(6) {
-        // Unpause the L1CrossDomainMessenger.
-        L1CrossDomainMessenger(config.proxyAddressConfig.l1CrossDomainMessengerProxy).unpause();
     }
 
     /**
