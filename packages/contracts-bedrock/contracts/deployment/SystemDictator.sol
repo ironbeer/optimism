@@ -312,7 +312,7 @@ contract SystemDictator is OwnableUpgradeable {
             )
         );
 
-        // Upgrade and initialize the OptimismPortal as paused.
+        // Upgrade and initialize the OptimismPortal.
         config.globalConfig.proxyAdmin.upgradeAndCall(
             payable(config.proxyAddressConfig.optimismPortalProxy),
             address(config.implementationAddressConfig.optimismPortalImpl),

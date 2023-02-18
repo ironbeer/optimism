@@ -155,7 +155,8 @@ contract Portal_Initializer is L2OutputOracle_Initializer {
         opImpl = new OptimismPortal({
             _l2Oracle: oracle,
             _guardian: guardian,
-            _finalizationPeriodSeconds: 7 days
+            _finalizationPeriodSeconds: 7 days,
+            _paused: true
         });
         Proxy proxy = new Proxy(multisig);
         vm.prank(multisig);
@@ -218,7 +219,8 @@ contract Messenger_Initializer is L2OutputOracle_Initializer {
         op = new OptimismPortal({
             _l2Oracle: oracle,
             _guardian: guardian,
-            _finalizationPeriodSeconds: 7 days
+            _finalizationPeriodSeconds: 7 days,
+            _paused: false
         });
         vm.label(address(op), "OptimismPortal");
         vm.prank(op.GUARDIAN());
