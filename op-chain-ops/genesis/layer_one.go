@@ -286,6 +286,8 @@ func deployL1Contracts(config *DeployConfig, backend *backends.SimulatedBackend)
 		{
 			Name: "OptimismPortal",
 			Args: []interface{}{
+				predeploys.DevL2OutputOracleAddr,
+				config.FinalSystemOwner,
 				uint642Big(config.FinalizationPeriodSeconds),
 			},
 		},
@@ -348,8 +350,9 @@ func l1Deployer(backend *backends.SimulatedBackend, opts *bind.TransactOpts, dep
 		_, tx, _, err = bindings.DeployOptimismPortal(
 			opts,
 			backend,
-			predeploys.DevL2OutputOracleAddr,
-			deployment.Args[0].(*big.Int),
+			deployment.Args[0].(common.Address),
+			deployment.Args[1].(common.Address),
+			deployment.Args[2].(*big.Int),
 		)
 	case "L1CrossDomainMessenger":
 		_, tx, _, err = bindings.DeployL1CrossDomainMessenger(
