@@ -223,8 +223,6 @@ contract Messenger_Initializer is L2OutputOracle_Initializer {
             _paused: false
         });
         vm.label(address(op), "OptimismPortal");
-        vm.prank(op.GUARDIAN());
-        op.unpause();
 
         // Deploy the address manager
         vm.prank(multisig);
